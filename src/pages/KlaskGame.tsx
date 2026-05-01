@@ -7,10 +7,10 @@ import { supabase } from '../lib/supabase'
 const W = 360
 const H = 600
 const WALL = 10
-const BALL_R = 10
-const PADDLE_R = 20
-const BISCUIT_R = 12
-const GOAL_R = 20
+const BALL_R = 17
+const PADDLE_R = 18
+const BISCUIT_R = 10
+const GOAL_R = 26
 const CORNER_R = 55                          // コーナー弧の半径
 const CORNER_OFFSET = WALL + PADDLE_R + 20  // = 50 スタート位置のコーナーから内側
 const MAX_BALL_SPEED = 14                    // ボール速度上限
@@ -448,22 +448,21 @@ export default function KlaskGame() {
     ctx.beginPath(); ctx.arc(gs.ball.x, gs.ball.y, BALL_R, 0, Math.PI * 2); ctx.fill()
     ctx.shadowBlur = 0
 
-    // ─ P1パドル（青・下） ─
-    const g1 = ctx.createRadialGradient(p1.x - 7, p1.y - 7, 2, p1.x, p1.y, PADDLE_R)
-    g1.addColorStop(0, '#93c5fd'); g1.addColorStop(1, '#1d4ed8')
-    ctx.fillStyle = g1; ctx.strokeStyle = '#bfdbfe'; ctx.lineWidth = 2
+    // ─ P1パドル（黒） ─
+    const g1 = ctx.createRadialGradient(p1.x - 5, p1.y - 5, 2, p1.x, p1.y, PADDLE_R)
+    g1.addColorStop(0, '#555'); g1.addColorStop(1, '#111')
+    ctx.fillStyle = g1; ctx.strokeStyle = '#777'; ctx.lineWidth = 2
     ctx.beginPath(); ctx.arc(p1.x, p1.y, PADDLE_R, 0, Math.PI * 2); ctx.fill(); ctx.stroke()
-    // 中央の棒感
-    ctx.fillStyle = '#1e3a8a'
-    ctx.beginPath(); ctx.arc(p1.x, p1.y, 6, 0, Math.PI * 2); ctx.fill()
+    ctx.fillStyle = '#000'
+    ctx.beginPath(); ctx.arc(p1.x, p1.y, 5, 0, Math.PI * 2); ctx.fill()
 
-    // ─ P2パドル（赤・上） ─
-    const g2 = ctx.createRadialGradient(p2.x - 7, p2.y - 7, 2, p2.x, p2.y, PADDLE_R)
-    g2.addColorStop(0, '#fca5a5'); g2.addColorStop(1, '#dc2626')
-    ctx.fillStyle = g2; ctx.strokeStyle = '#fecaca'; ctx.lineWidth = 2
+    // ─ P2パドル（黒） ─
+    const g2 = ctx.createRadialGradient(p2.x - 5, p2.y - 5, 2, p2.x, p2.y, PADDLE_R)
+    g2.addColorStop(0, '#555'); g2.addColorStop(1, '#111')
+    ctx.fillStyle = g2; ctx.strokeStyle = '#777'; ctx.lineWidth = 2
     ctx.beginPath(); ctx.arc(p2.x, p2.y, PADDLE_R, 0, Math.PI * 2); ctx.fill(); ctx.stroke()
-    ctx.fillStyle = '#7f1d1d'
-    ctx.beginPath(); ctx.arc(p2.x, p2.y, 6, 0, Math.PI * 2); ctx.fill()
+    ctx.fillStyle = '#000'
+    ctx.beginPath(); ctx.arc(p2.x, p2.y, 5, 0, Math.PI * 2); ctx.fill()
 
     ctx.restore()
   }, [isHost])
