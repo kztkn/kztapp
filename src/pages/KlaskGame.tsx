@@ -7,7 +7,7 @@ import { supabase } from '../lib/supabase'
 const W = 360
 const H = 600
 const WALL = 10
-const BALL_R = 16
+const BALL_R = 13
 const PADDLE_R = 14
 const BISCUIT_R = 10
 const GOAL_R = 26
@@ -184,11 +184,18 @@ export default function KlaskGame() {
     prevP1Ref.current = { ...p1Ref.current }
     prevP2Ref.current = { ...p2Ref.current }
     scoringRef.current = false
+    // ボールを失点者のパドル位置に配置（センター方向に少しオフセット）
+    const paddlePos = loser === 'p1' ? p1Ref.current : p2Ref.current
+    const dx = W / 2 - paddlePos.x
+    const dy = H / 2 - paddlePos.y
+    const d = Math.hypot(dx, dy)
+    const off = PADDLE_R + BALL_R + 3
     gsRef.current = {
       ball: {
-        x: W / 2, y: H / 2,
-        vx: (Math.random() - 0.5) * 6,
-        vy: scorer === 'p1' ? -5 : 5,
+        x: paddlePos.x + (dx / d) * off,
+        y: paddlePos.y + (dy / d) * off,
+        vx: 0,
+        vy: 0,
       },
       biscuits: initBiscuits(),
       score: savedScore,
