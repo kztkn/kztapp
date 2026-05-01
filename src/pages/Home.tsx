@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { Zap, ChevronRight } from 'lucide-react'
+import { Zap, ChevronRight, Disc } from 'lucide-react'
 
 const games = [
   {
@@ -11,6 +11,16 @@ const games = [
     iconBg: 'bg-violet-500/20',
     color: 'from-violet-500/10 to-purple-600/10',
     border: 'border-violet-500/20',
+  },
+  {
+    path: '/klask',
+    Icon: Disc,
+    title: 'クラスク',
+    description: '友達と1:1対戦！先に5点取ったら勝ち',
+    iconColor: 'text-emerald-300',
+    iconBg: 'bg-emerald-500/20',
+    color: 'from-emerald-500/10 to-teal-600/10',
+    border: 'border-emerald-500/20',
   },
 ]
 
