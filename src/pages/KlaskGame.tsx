@@ -197,18 +197,23 @@ export default function KlaskGame() {
     setUiLoser(null)
   }, [])
 
-  // ─── コーナー希望（失点者がタップで希望を送るだけ、再開はホストのタイマーが必ず行う） ────
+  // ─── コーナー選択：ボタン押下で即ゲーム再開 ────
   const pickCorner = useCallback((side: 'left' | 'right') => {
     chosenSideRef.current = side
-    // ゲストが失点したときはホストに希望を送信
-    if (!isHost && gsRef.current.loser === 'p2') {
+    if (isHost) {
+      // ホストが失点者のとき → タイマーをキャンセルして即再開
+      clearTimeout(scoreTimeoutRef.current)
+      const loser = gsRef.current.loser
+      if (loser) resumeGame(loser === 'p1' ? 'p2' : 'p1', side)
+    } else {
+      // ゲストが失点者のとき → ホストへ送信
       chRef.current?.send({
         type: 'broadcast',
         event: 'corner_pick',
         payload: { side },
       })
     }
-  }, [isHost])
+  }, [isHost, resumeGame])
 
   // ─── 得点処理（ホストのみ） ───────────────────────────
   const handleScore = useCallback((scorer: 'p1' | 'p2', prevScore: { p1: number; p2: number }, reason: string) => {
@@ -235,10 +240,11 @@ export default function KlaskGame() {
 
     if (!finished) {
       chosenSideRef.current = 'right'
+      // 4秒後に誰もボタンを押さなかった場合のフォールバック
       scoreTimeoutRef.current = setTimeout(() => {
-        if (!mountedRef.current) return
+        if (!mountedRef.current || gsRef.current.phase !== 'scored') return
         resumeGame(scorer, chosenSideRef.current)
-      }, 2000)
+      }, 4000)
     }
   }, [resumeGame])
 
@@ -535,10 +541,13 @@ export default function KlaskGame() {
       else if (payload.role === 'guest' && isHost) p2Ref.current = { x: payload.x, y: payload.y }
     })
 
-    // ゲストがコーナー希望を送信 → ホストが受け取って chosenSideRef に保存
+    // ゲストがコーナー選択 → ホストはタイマーをキャンセルして即再開
     ch.on('broadcast', { event: 'corner_pick' }, ({ payload }) => {
       if (!isHost) return
-      chosenSideRef.current = payload.side as 'left' | 'right'
+      clearTimeout(scoreTimeoutRef.current)
+      const side = payload.side as 'left' | 'right'
+      const loser = gsRef.current.loser
+      if (loser) resumeGame(loser === 'p1' ? 'p2' : 'p1', side)
     })
 
     ch.on('broadcast', { event: 'guest_joined' }, () => setGuestJoined(true))
