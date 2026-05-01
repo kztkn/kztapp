@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm list *)",
+      "Bash(npx --yes @resvg/resvg-js --version)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\kazut\\\\Documents\\\\work-repo\\\\kztapp\" -Recurse -Force)",
+      "Bash(Select-Object -First 100)",
+      "Bash(Format-List)",
+      "Bash(findstr supabase *)"
+    ]
+  }
+}

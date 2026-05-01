@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { Zap, Dumbbell, ChevronRight } from 'lucide-react'
+import { Zap, ChevronRight } from 'lucide-react'
 
 const games = [
   {
@@ -11,16 +11,6 @@ const games = [
     iconBg: 'bg-violet-500/20',
     color: 'from-violet-500/10 to-purple-600/10',
     border: 'border-violet-500/20',
-  },
-  {
-    path: '/gym',
-    Icon: Dumbbell,
-    title: 'ジムトラッカー',
-    description: 'ジムの記録をつけよう',
-    iconColor: 'text-emerald-300',
-    iconBg: 'bg-emerald-500/20',
-    color: 'from-emerald-500/10 to-teal-600/10',
-    border: 'border-emerald-500/20',
   },
 ]
 
