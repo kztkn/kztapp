@@ -7,8 +7,8 @@ import { supabase } from '../lib/supabase'
 const W = 360
 const H = 600
 const WALL = 10
-const BALL_R = 17
-const PADDLE_R = 18
+const BALL_R = 16
+const PADDLE_R = 14
 const BISCUIT_R = 10
 const GOAL_R = 26
 const CORNER_R = 55                          // コーナー弧の半径
