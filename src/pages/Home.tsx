@@ -1,13 +1,16 @@
 import { useNavigate } from 'react-router-dom'
+import { Zap, ChevronRight } from 'lucide-react'
 
 const games = [
   {
     path: '/mash',
-    emoji: '👆',
+    Icon: Zap,
     title: '連打ゲーム',
     description: '5秒で何回押せる？',
-    color: 'from-violet-500 to-purple-600',
-    shadow: 'shadow-violet-500/30',
+    iconColor: 'text-violet-300',
+    iconBg: 'bg-violet-500/20',
+    color: 'from-violet-500/10 to-purple-600/10',
+    border: 'border-violet-500/20',
   },
 ]
 
@@ -17,29 +20,35 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-950 text-white flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-sm space-y-8">
-        <div className="text-center space-y-2">
+        <div className="text-center space-y-1">
           <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
             kztapp
           </h1>
-          <p className="text-gray-400 text-sm">ミニゲーム集</p>
+          <p className="text-gray-500 text-sm">ミニゲーム集</p>
         </div>
 
         <div className="space-y-3">
-          {games.map((game) => (
-            <button
-              key={game.path}
-              onClick={() => navigate(game.path)}
-              className={`w-full bg-gradient-to-r ${game.color} ${game.shadow} shadow-lg rounded-2xl p-5 text-left active:scale-95 transition-transform duration-100`}
-            >
-              <div className="flex items-center gap-4">
-                <span className="text-4xl">{game.emoji}</span>
-                <div>
-                  <p className="font-bold text-lg leading-tight">{game.title}</p>
-                  <p className="text-white/70 text-sm">{game.description}</p>
+          {games.map((game) => {
+            const Icon = game.Icon
+            return (
+              <button
+                key={game.path}
+                onClick={() => navigate(game.path)}
+                className={`w-full bg-gradient-to-r ${game.color} border ${game.border} rounded-2xl p-5 text-left active:scale-[0.97] transition-transform duration-100`}
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`w-12 h-12 rounded-xl ${game.iconBg} flex items-center justify-center shrink-0`}>
+                    <Icon size={24} className={game.iconColor} strokeWidth={2} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-base leading-tight">{game.title}</p>
+                    <p className="text-gray-400 text-sm mt-0.5">{game.description}</p>
+                  </div>
+                  <ChevronRight size={18} className="text-gray-600 shrink-0" />
                 </div>
-              </div>
-            </button>
-          ))}
+              </button>
+            )
+          })}
         </div>
       </div>
     </div>
