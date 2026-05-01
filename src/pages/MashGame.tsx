@@ -10,13 +10,15 @@ export default function MashGame() {
   const navigate = useNavigate()
   const [phase, setPhase] = useState<Phase>('ready')
   const [count, setCount] = useState(0)
-  const [timeLeft, setTimeLeft] = useState(DURATION)
+  const [timeLeft, setTimeLeft] = useState(DURATION * 1000)
   const [lockRemaining, setLockRemaining] = useState(0)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const startTimeRef = useRef<number>(0)
 
   const start = useCallback(() => {
     setCount(0)
-    setTimeLeft(DURATION)
+    setTimeLeft(DURATION * 1000)
+    startTimeRef.current = Date.now()
     setPhase('playing')
   }, [])
 
@@ -24,15 +26,15 @@ export default function MashGame() {
     if (phase !== 'playing') return
 
     timerRef.current = setInterval(() => {
-      setTimeLeft((t) => {
-        if (t <= 1) {
-          clearInterval(timerRef.current!)
-          setPhase('result')
-          return 0
-        }
-        return t - 1
-      })
-    }, 1000)
+      const remaining = DURATION * 1000 - (Date.now() - startTimeRef.current)
+      if (remaining <= 0) {
+        clearInterval(timerRef.current!)
+        setTimeLeft(0)
+        setPhase('result')
+      } else {
+        setTimeLeft(remaining)
+      }
+    }, 50)
 
     return () => clearInterval(timerRef.current!)
   }, [phase])
@@ -52,7 +54,8 @@ export default function MashGame() {
     return () => clearInterval(interval)
   }, [phase])
 
-  const handleMash = () => {
+  const handleMash = (e: React.PointerEvent) => {
+    e.preventDefault()
     if (phase === 'playing') setCount((c) => c + 1)
   }
 
@@ -64,6 +67,9 @@ export default function MashGame() {
   }
 
   const resultLocked = lockRemaining > 0
+  const displayTime = (timeLeft / 1000).toFixed(2)
+  const timerColor =
+    timeLeft > 3000 ? 'text-white' : timeLeft > 1000 ? 'text-yellow-400' : 'text-red-400'
 
   const r = rating(count)
 
@@ -98,14 +104,16 @@ export default function MashGame() {
               <div className="text-gray-400 mt-1">回</div>
             </div>
 
-            <div className="flex items-center justify-center gap-2">
-              <div className={`h-2 rounded-full bg-violet-500 transition-all duration-1000`}
-                style={{ width: `${(timeLeft / DURATION) * 100}%`, maxWidth: '200px' }} />
-              <span className="text-gray-300 font-mono tabular-nums w-6">{timeLeft}</span>
+            <div className="flex flex-col items-center gap-1">
+              <span className={`text-6xl font-black font-mono tabular-nums transition-colors duration-300 ${timerColor}`}>
+                {displayTime}
+              </span>
+              <span className="text-gray-500 text-sm">秒</span>
             </div>
 
             <button
-              onClick={handleMash}
+              onPointerDown={handleMash}
+              style={{ touchAction: 'none' }}
               className="w-full h-40 bg-gradient-to-br from-violet-500 to-purple-700 rounded-3xl text-5xl shadow-xl shadow-violet-500/40 active:scale-95 active:shadow-none transition-all duration-75"
             >
               👆

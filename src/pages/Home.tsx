@@ -5,7 +5,7 @@ const games = [
     path: '/mash',
     emoji: '👆',
     title: '連打ゲーム',
-    description: '10秒で何回押せる？',
+    description: '5秒で何回押せる？',
     color: 'from-violet-500 to-purple-600',
     shadow: 'shadow-violet-500/30',
   },
