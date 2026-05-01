@@ -3,13 +3,15 @@ import { useNavigate } from 'react-router-dom'
 
 type Phase = 'ready' | 'playing' | 'result'
 
-const DURATION = 10
+const DURATION = 5
+const RESULT_LOCK = 2
 
 export default function MashGame() {
   const navigate = useNavigate()
   const [phase, setPhase] = useState<Phase>('ready')
   const [count, setCount] = useState(0)
   const [timeLeft, setTimeLeft] = useState(DURATION)
+  const [lockRemaining, setLockRemaining] = useState(0)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const start = useCallback(() => {
@@ -35,16 +37,33 @@ export default function MashGame() {
     return () => clearInterval(timerRef.current!)
   }, [phase])
 
+  useEffect(() => {
+    if (phase !== 'result') return
+    setLockRemaining(RESULT_LOCK)
+    const interval = setInterval(() => {
+      setLockRemaining((r) => {
+        if (r <= 1) {
+          clearInterval(interval)
+          return 0
+        }
+        return r - 1
+      })
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [phase])
+
   const handleMash = () => {
     if (phase === 'playing') setCount((c) => c + 1)
   }
 
   const rating = (n: number) => {
-    if (n >= 80) return { label: '神業！', color: 'text-yellow-400' }
-    if (n >= 60) return { label: 'すごい！', color: 'text-violet-400' }
-    if (n >= 40) return { label: 'いい感じ', color: 'text-blue-400' }
+    if (n >= 40) return { label: '神業！', color: 'text-yellow-400' }
+    if (n >= 30) return { label: 'すごい！', color: 'text-violet-400' }
+    if (n >= 20) return { label: 'いい感じ', color: 'text-blue-400' }
     return { label: 'もう一回！', color: 'text-gray-400' }
   }
+
+  const resultLocked = lockRemaining > 0
 
   const r = rating(count)
 
@@ -104,15 +123,22 @@ export default function MashGame() {
             <p className={`text-2xl font-bold ${r.color}`}>{r.label}</p>
 
             <div className="space-y-3">
+              {resultLocked && (
+                <p className="text-gray-500 text-sm">
+                  ボタンが使えるまで あと{lockRemaining}秒…
+                </p>
+              )}
               <button
+                disabled={resultLocked}
                 onClick={start}
-                className="w-full bg-gradient-to-r from-violet-500 to-purple-600 rounded-2xl py-4 font-bold shadow-lg shadow-violet-500/30 active:scale-95 transition-transform duration-100"
+                className="w-full bg-gradient-to-r from-violet-500 to-purple-600 rounded-2xl py-4 font-bold shadow-lg shadow-violet-500/30 active:scale-95 transition-all duration-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100"
               >
                 もう一回
               </button>
               <button
+                disabled={resultLocked}
                 onClick={() => navigate('/')}
-                className="w-full bg-gray-800 rounded-2xl py-4 font-bold text-gray-300 active:scale-95 transition-transform duration-100"
+                className="w-full bg-gray-800 rounded-2xl py-4 font-bold text-gray-300 active:scale-95 transition-all duration-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100"
               >
                 ホームへ
               </button>
