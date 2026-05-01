@@ -4,25 +4,28 @@ import { ArrowLeft, Trophy } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
 // ─── 定数 ───────────────────────────────────────────────
-const W = 320
-const H = 560
+const W = 360
+const H = 600
 const WALL = 10
-const BALL_R = 12
-const PADDLE_R = 22
-const BISCUIT_R = 14
-const GOAL_R = 22
-const CORNER_R = 50                          // コーナー弧の半径
-const CORNER_OFFSET = WALL + PADDLE_R + 20  // = 52 スタート位置のコーナーから内側
+const BALL_R = 10
+const PADDLE_R = 20
+const BISCUIT_R = 12
+const GOAL_R = 20
+const CORNER_R = 55                          // コーナー弧の半径
+const CORNER_OFFSET = WALL + PADDLE_R + 20  // = 50 スタート位置のコーナーから内側
+const MAX_BALL_SPEED = 14                    // ボール速度上限
 
 const FRICTION = 0.995
-const B_ATTACH_D = PADDLE_R + BISCUIT_R + 4  // = 40
+const B_ATTACH_D = PADDLE_R + BISCUIT_R + 4  // = 36
 const B_MAGNET_D = 80
 const B_FORCE = 0.22
 const B_FRICTION = 0.87
 const WIN_SCORE = 5
 
-const GOAL_P1 = { x: W / 2, y: H - WALL - 2 }   // 下中央
-const GOAL_P2 = { x: W / 2, y: WALL + 2 }        // 上中央
+// ゴールを内側へ（パドルが後ろを通れるよう壁から十分離す）
+const GOAL_INSET = WALL + GOAL_R + PADDLE_R + 15  // = 65
+const GOAL_P1 = { x: W / 2, y: H - GOAL_INSET }  // 下中央
+const GOAL_P2 = { x: W / 2, y: GOAL_INSET }       // 上中央
 
 // スタート位置（ホスト座標系）
 // P1（下）の左右コーナー
@@ -54,9 +57,9 @@ const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v
 function initBiscuits(): Biscuit[] {
   const cy = H / 2
   return [
-    { x: 80,     y: cy, vx: 0, vy: 0, who: null, ox: 0, oy: 0 },
-    { x: W / 2,  y: cy, vx: 0, vy: 0, who: null, ox: 0, oy: 0 },
-    { x: W - 80, y: cy, vx: 0, vy: 0, who: null, ox: 0, oy: 0 },
+    { x: W / 4,     y: cy, vx: 0, vy: 0, who: null, ox: 0, oy: 0 },
+    { x: W / 2,     y: cy, vx: 0, vy: 0, who: null, ox: 0, oy: 0 },
+    { x: 3 * W / 4, y: cy, vx: 0, vy: 0, who: null, ox: 0, oy: 0 },
   ]
 }
 
@@ -275,6 +278,13 @@ export default function KlaskGame() {
     if (ball.x > bMaxX) { ball.x = bMaxX; ball.vx = -Math.abs(ball.vx) }
     if (ball.y < bMin) { ball.y = bMin; ball.vy = Math.abs(ball.vy) }
     if (ball.y > bMaxY) { ball.y = bMaxY; ball.vy = -Math.abs(ball.vy) }
+
+    // 速度上限（跳ね返りで加速しすぎないよう）
+    const spd = Math.hypot(ball.vx, ball.vy)
+    if (spd > MAX_BALL_SPEED) {
+      ball.vx = ball.vx / spd * MAX_BALL_SPEED
+      ball.vy = ball.vy / spd * MAX_BALL_SPEED
+    }
 
     // パドルとの衝突
     ball = collideBallPaddle(ball, p1, p1Vel)
