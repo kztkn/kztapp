@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { Zap, ChevronRight, Disc } from 'lucide-react'
+import { Zap, ChevronRight, Disc, Activity } from 'lucide-react'
 
 const games = [
   {
@@ -21,6 +21,16 @@ const games = [
     iconBg: 'bg-emerald-500/20',
     color: 'from-emerald-500/10 to-teal-600/10',
     border: 'border-emerald-500/20',
+  },
+  {
+    path: '/run',
+    Icon: Activity,
+    title: '棒人間ランナー',
+    description: '障害物をジャンプで飛び越えろ！',
+    iconColor: 'text-orange-300',
+    iconBg: 'bg-orange-500/20',
+    color: 'from-orange-500/10 to-amber-600/10',
+    border: 'border-orange-500/20',
   },
 ]
 
