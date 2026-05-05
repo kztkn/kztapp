@@ -7,7 +7,7 @@ import { supabase } from '../lib/supabase'
 const W = 360
 const H = 600
 const WALL = 10
-const BALL_R = 13
+const BALL_R = 10
 const PADDLE_R = 14
 const BISCUIT_R = 10
 const GOAL_R = 26
@@ -444,7 +444,7 @@ export default function KlaskGame() {
 
     // ─ ボール（黄色） ─
     ctx.shadowColor = 'rgba(251,191,36,0.6)'
-    ctx.shadowBlur = 12
+    ctx.shadowBlur = 4
     ctx.fillStyle = '#fbbf24'
     ctx.beginPath(); ctx.arc(gs.ball.x, gs.ball.y, BALL_R, 0, Math.PI * 2); ctx.fill()
     // ハイライト
@@ -592,8 +592,18 @@ export default function KlaskGame() {
 
   // ─── ホストがゲームスタート ──────────────────────────
   const startGame = useCallback(() => {
-    const newGS = initGS(true)
-    gsRef.current = newGS
+    // ボールをホスト右下コーナー（INIT_P1）横に配置
+    const dx = W / 2 - INIT_P1.x
+    const dy = H / 2 - INIT_P1.y
+    const d = Math.hypot(dx, dy)
+    const off = PADDLE_R + BALL_R + 3
+    gsRef.current = {
+      ball: { x: INIT_P1.x + (dx / d) * off, y: INIT_P1.y + (dy / d) * off, vx: 0, vy: 0 },
+      biscuits: initBiscuits(),
+      score: { p1: 0, p2: 0 },
+      phase: 'playing',
+      loser: null,
+    }
     p1Ref.current = { ...INIT_P1 }
     p2Ref.current = { ...INIT_P2 }
     prevP1Ref.current = { ...INIT_P1 }
